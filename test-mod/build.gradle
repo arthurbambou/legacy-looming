@@ -1,5 +1,5 @@
 plugins {
-	id "fabric-loom" version "1.6-SNAPSHOT"
+	id "fabric-loom" version "1.7.0-alpha.5"
 	id "legacy-looming"
 	id "maven-publish"
 }
@@ -23,7 +23,7 @@ loom {
 }
 
 legacyLooming {
-//	useLFIntermediary.set(false)
+//	intermediaryVersion.set(2)
 }
 
 dependencies {
