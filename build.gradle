@@ -30,8 +30,8 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.google.guava:guava:33.0.0-jre")
 
-//    implementation("net.fabricmc:fabric-loom:${baseVersion}-SNAPSHOT")
-    implementation("net.fabricmc:fabric-loom:${baseVersion}.0-alpha.5")
+    implementation("net.fabricmc:fabric-loom:${baseVersion}-SNAPSHOT")
+//    implementation("net.fabricmc:fabric-loom:${baseVersion}.0-alpha.5")
     // needed for 'validatePlugins' task, same version as used by fabric-loom
     compileOnly("net.fabricmc:mapping-io:0.6.1")
 }
