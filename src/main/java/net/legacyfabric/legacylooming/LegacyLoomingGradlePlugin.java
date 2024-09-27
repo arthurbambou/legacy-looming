@@ -40,7 +40,7 @@ public class LegacyLoomingGradlePlugin implements Plugin<PluginAware> {
 
             setIntermediary(project, extension, loom);
             setManifestAttributes(project, extension);
-//            overrideMigrateTask(project);
+            overrideMigrateTask(project);
         }
     }
 
@@ -79,7 +79,7 @@ public class LegacyLoomingGradlePlugin implements Plugin<PluginAware> {
 
     public static void overrideMigrateTask(Project project) {
         // override loom's migrateMappings to fix issues
-        var migrateTask = project.getTasks().replace("migrateMappings", MigrateLegacyMappingsTask.class);
+        var migrateTask = project.getTasks().replace("improvedMigrateMappings", MigrateLegacyMappingsTask.class);
         migrateTask.setDescription("Migrates mappings to a new version.");
         migrateTask.getOutputs().upToDateWhen(o -> false);
     }
