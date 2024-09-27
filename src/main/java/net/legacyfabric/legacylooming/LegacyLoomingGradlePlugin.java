@@ -79,8 +79,10 @@ public class LegacyLoomingGradlePlugin implements Plugin<PluginAware> {
 
     public static void overrideMigrateTask(Project project) {
         // override loom's migrateMappings to fix issues
-        var migrateTask = project.getTasks().replace("improvedMigrateMappings", MigrateLegacyMappingsTask.class);
-        migrateTask.setDescription("Migrates mappings to a new version.");
-        migrateTask.getOutputs().upToDateWhen(o -> false);
+        project.getTasks().register("improvedMigrateMappings", MigrateLegacyMappingsTask.class, migrateTask -> {
+            migrateTask.setDescription("Migrates mappings to a new version.");
+            migrateTask.getOutputs().upToDateWhen(o -> false);
+        });
+
     }
 }
