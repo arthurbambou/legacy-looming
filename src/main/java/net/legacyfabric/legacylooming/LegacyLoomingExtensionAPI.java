@@ -10,6 +10,5 @@ public interface LegacyLoomingExtensionAPI {
 
     Property<Integer> getIntermediaryVersion();
 
-    @Deprecated
     Property<Boolean> useLFIntermediary();
 }

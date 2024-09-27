@@ -6,7 +6,6 @@ import org.gradle.api.provider.Property;
 public class LegacyLoomingExtensionImpl implements LegacyLoomingExtensionAPI {
     protected final Property<Integer> intermediaryVersion;
 
-    @Deprecated
     protected final Property<Boolean> useLFIntermediary;
 
     public LegacyLoomingExtensionImpl(Project project) {
@@ -18,7 +17,6 @@ public class LegacyLoomingExtensionImpl implements LegacyLoomingExtensionAPI {
         return this.intermediaryVersion;
     }
 
-    @Deprecated
     @Override
     public Property<Boolean> useLFIntermediary() {
         return this.useLFIntermediary;

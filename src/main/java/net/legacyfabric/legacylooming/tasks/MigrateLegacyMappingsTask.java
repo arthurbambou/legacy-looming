@@ -2,28 +2,29 @@ package net.legacyfabric.legacylooming.tasks;
 
 import net.fabricmc.loom.configuration.DependencyInfo;
 import net.fabricmc.loom.task.MigrateMappingsTask;
+import net.fabricmc.loom.task.service.MigrateMappingsService;
 import net.fabricmc.loom.util.Constants;
 import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
-import org.gradle.api.tasks.TaskAction;
-import org.gradle.api.tasks.options.Option;
+import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.Input;
 import org.gradle.work.DisableCachingByDefault;
 
 @DisableCachingByDefault(because = "Always rerun this tasks.")
 public abstract class MigrateLegacyMappingsTask extends MigrateMappingsTask {
     private Logger logger;
-    private String targetMappings;
 
-    @Override
-    @Option(option = "mappings", description = "Target mappings")
-    public void setMappings(String mappings) {
-        super.setMappings(mappings);
-        this.targetMappings = mappings;
+    @Input
+    public abstract Property<String> getTempMappings();
+
+    public MigrateLegacyMappingsTask() {
+        super();
+        this.getTempMappings().convention(this.getMappings().flatMap(this::transformMappings));
+        this.getMigrationServiceOptions().set(MigrateMappingsService.createOptions(this.getProject(), this.getTempMappings(), this.getInputDir(), this.getOutputDir()));
     }
 
-    @Override
-    @TaskAction
-    public void doTask() throws Throwable {
+    private Provider<String> transformMappings(String mappings) {
         Project project = getProject();
         logger = project.getLogger();
 
@@ -35,38 +36,40 @@ public abstract class MigrateLegacyMappingsTask extends MigrateMappingsTask {
             DependencyInfo mappingsDep = DependencyInfo.create(project, Constants.Configurations.MAPPINGS);
             String mappingsDepString = mappingsDep.getDepString();
 
-            this.checkForLegacyYarn(mappingsDepString, minecraftVersion);
+            return project.provider(() -> this.checkForLegacyYarn(mappingsDepString, minecraftVersion, mappings));
         } catch (Exception e) {
             logger.warn("Failed to check if legacyfabric yarn mappings are used!", e);
         }
 
-        super.doTask();
+        return project.provider(() -> mappings);
     }
 
-    private void checkForLegacyYarn(String mappingsDepString, String minecraftVersion) {
+    private String checkForLegacyYarn(String mappingsDepString, String minecraftVersion, String original) {
         if (mappingsDepString.startsWith("net.legacyfabric:yarn")) {
             logger.info("Detected legacyfabric yarn mappings, adjusting target mappings");
-            this.adjustTargetMappings("net.legacyfabric:yarn", minecraftVersion);
+            return this.adjustTargetMappings("net.legacyfabric:yarn", minecraftVersion, original);
         }
         else if (mappingsDepString.startsWith("net.legacyfabric.v2:yarn")) {
             logger.info("Detected legacyfabric yarn v2 mappings, adjusting target mappings");
-            this.adjustTargetMappings("net.legacyfabric.v2:yarn", minecraftVersion);
+            return this.adjustTargetMappings("net.legacyfabric.v2:yarn", minecraftVersion, original);
         }
+
+        return original;
     }
 
-    private void adjustTargetMappings(String yarnPath, String minecraftVersion) {
+    private String adjustTargetMappings(String yarnPath, String minecraftVersion, String original) {
         String yarnBuild;
-        if (targetMappings.matches("^[0-9.]+\\+build\\.[0-9]+$")) {
-            yarnBuild = targetMappings;
+        if (original.matches("^[0-9.]+\\+build\\.[0-9]+$")) {
+            yarnBuild = original;
         }
-        else if (targetMappings.matches("^[0-9]+$")) {
-            yarnBuild = minecraftVersion + "+build." + targetMappings;
+        else if (original.matches("^[0-9]+$")) {
+            yarnBuild = minecraftVersion + "+build." + original;
         }
         else {
             logger.info("The provided target mappings aren't a yarn build, skipping");
-            return;
+            return original;
         }
 
-        this.setMappings(yarnPath + ":" + yarnBuild + ":v2");
+        return yarnPath + ":" + yarnBuild + ":v2";
     }
 }

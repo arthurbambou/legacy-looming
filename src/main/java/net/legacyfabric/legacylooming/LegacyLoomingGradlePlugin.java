@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import net.fabricmc.loom.LoomGradleExtension;
 import net.fabricmc.loom.api.LoomGradleExtensionAPI;
 import net.fabricmc.loom.task.AbstractRemapJarTask;
+import net.fabricmc.loom.task.MigrateMappingsTask;
 import net.fabricmc.loom.util.ZipUtils;
 import net.legacyfabric.legacylooming.providers.LWJGL2LibraryProcessor;
 import net.legacyfabric.legacylooming.providers.LegacyFabricIntermediaryMappingsProvider;
@@ -39,7 +40,7 @@ public class LegacyLoomingGradlePlugin implements Plugin<PluginAware> {
 
             setIntermediary(project, extension, loom);
             setManifestAttributes(project, extension);
-            overrideMigrateTask(project);
+//            overrideMigrateTask(project);
         }
     }
 
@@ -76,7 +77,7 @@ public class LegacyLoomingGradlePlugin implements Plugin<PluginAware> {
         });
     }
 
-    private static void overrideMigrateTask(Project project) {
+    public static void overrideMigrateTask(Project project) {
         // override loom's migrateMappings to fix issues
         var migrateTask = project.getTasks().replace("migrateMappings", MigrateLegacyMappingsTask.class);
         migrateTask.setDescription("Migrates mappings to a new version.");
