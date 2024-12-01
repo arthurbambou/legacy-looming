@@ -7,7 +7,7 @@ plugins {
 
 group 'net.legacyfabric'
 base.archivesName = project.name
-def baseVersion = '1.8'
+def baseVersion = '1.9'
 
 def ENV = System.getenv()
 if (ENV.GITHUB_RUN_NUMBER) {
@@ -106,7 +106,7 @@ publishing {
     repositories {
         if (ENV.MAVEN_PUBLISH_CREDENTIALS) {
             maven {
-                url "https://maven.legacyfabric.net"
+                url "https://maven.legacyfabric.net/"
                 credentials {
                     username ENV.MAVEN_PUBLISH_CREDENTIALS.split(":")[0]
                     password ENV.MAVEN_PUBLISH_CREDENTIALS.split(":")[1]
